@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <title>WebRTC p2p data</title>
     <script src="js/adapter.js"></script>
+    <script src="js/jquery-2.0.0.js"></script>
+    <script src="js/bootstrap.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 </head>
@@ -51,6 +53,30 @@ Testing WebRTC connection.
   <br>
   <input type="button" value="Handle remote ICECandidate" name="remoteICECandidateButton" onClick="remoteICECandidateClick()">
 </form>
+
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <h3 id="myModalLabel">Foo</h3>
+  </div>
+  <div class="modal-body">
+	  <div id="nickname_control" class="control-group">
+	    <div class="controls">
+	      <input type="text" id="NickName" placeholder="Nickname" autofocus>
+	      <span class="help-inline"></span>
+	    </div>
+	  </div>
+    <label class="radio">
+      Quux<input type="radio" name="options" value="b" checked>
+    </label>
+    <label class="radio">
+      Baz<input type="radio" name="options" value="g">
+    </label>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" id="userInfo" data-dismiss="modal" aria-hidden="true">Bar</button>
+  </div>
+</div>
+
 <script>
 /* See also:
     http://www.html5rocks.com/en/tutorials/webrtc/basics/
@@ -89,6 +115,13 @@ var pc1 = new RTCPeerConnection(cfg, con),
     dc1 = null, tn1 = null;
 
 var pc1icedone = false;
+
+$('#myModal').modal('show');
+
+document.getElementById('userInfo').addEventListener('click', function() {
+    console.log("click");
+    $('#myModal').modal('hide');
+}, true);
 
 function setupDC1() {
     try {
