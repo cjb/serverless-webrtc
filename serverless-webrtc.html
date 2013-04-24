@@ -8,6 +8,7 @@
     <script src="js/bootstrap.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="css/serverless-webrtc-bootstrap.css" rel="stylesheet">
 </head>
 <body>
 Testing WebRTC connection.
@@ -15,65 +16,60 @@ Testing WebRTC connection.
 <button id=msg1 type=button>PC1 -> PC2</button>
 <button id=msg2 type=button>PC2 -> PC1</button>
 
-<form name="localOfferForm">
-  <p>Local offer:</p>
-  <textarea name="localOffer" rows="10" cols="50"></textarea>
-  <br>
-</form>
-
 <form name="remoteOfferForm">
   <p>Remote offer:</p>
-  <textarea name="remoteOffer" rows="10" cols="50"></textarea>
+  <textarea id="remoteOffer" name="remoteOffer" rows="10" cols="50"></textarea>
   <br>
 <input type="button" value="Handle remote offer" name="remoteOfferButton" onClick="remoteOfferClick()">
 </form>
 
 <form name="localAnswerForm">
   <p>Local answer:</p>
-  <textarea name="localAnswer" rows="10" cols="50"></textarea>
+  <textarea id="localAnswer" name="localAnswer" rows="10" cols="50"></textarea>
   <br>
 </form>
 
 <form name="remoteAnswerForm">
   <p>Remote answer:</p>
-  <textarea name="remoteAnswer" rows="10" cols="50"></textarea>
+  <textarea id="remoteAnswer" name="remoteAnswer" rows="10" cols="50"></textarea>
   <br>
   <input type="button" value="Handle remote answer" name="remoteAnswerButton" onClick="remoteAnswerClick()">
 </form>
 
 <form name="localICECandidateForm">
   <p>Local ICE Candidate:</p>
-  <textarea name="localICECandidate" rows="10" cols="50"></textarea>
+  <textarea id="localICECandidate" name="localICECandidate" rows="10" cols="50"></textarea>
   <br>
 </form>
 
 <form name="remoteICECandidateForm">
   <p>Remote ICE Candidate:</p>
-  <textarea name="remoteICECandidate" rows="10" cols="50"></textarea>
+  <textarea id="remoteICECandidate" name="remoteICECandidate" rows="10" cols="50"></textarea>
   <br>
   <input type="button" value="Handle remote ICECandidate" name="remoteICECandidateButton" onClick="remoteICECandidateClick()">
 </form>
 
-<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal" id="showLocalOffer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
-    <h3 id="myModalLabel">Foo</h3>
+    <h3 id="myModalLabel">Send your local offer to someone else</h3>
   </div>
   <div class="modal-body">
-	  <div id="nickname_control" class="control-group">
-	    <div class="controls">
-	      <input type="text" id="NickName" placeholder="Nickname" autofocus>
-	      <span class="help-inline"></span>
-	    </div>
-	  </div>
-    <label class="radio">
-      Quux<input type="radio" name="options" value="b" checked>
-    </label>
-    <label class="radio">
-      Baz<input type="radio" name="options" value="g">
-    </label>
+    Here's your "offer" -- it tells someone else how to connect to you.  Send the whole thing to them, for example in an instant message or e-mail.
+  <br/>
+  <textarea class="input-large" id="localOffer" name="localOffer" rows="10" cols="100"></textarea>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" id="userInfo" data-dismiss="modal" aria-hidden="true">Bar</button>
+    <button class="btn btn-primary" id="offerSentBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+  </div>
+</div>
+
+<div class="modal" id="createOrJoin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <h3 id="myModalLabel">Create or join a room?</h3>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" id="joinBtn" data-dismiss="modal" aria-hidden="true">Join</button>
+    <button class="btn btn-primary" id="createBtn" data-dismiss="modal" aria-hidden="true">Create</button>
   </div>
 </div>
 

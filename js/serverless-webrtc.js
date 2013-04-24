@@ -36,11 +36,19 @@ var pc1 = new RTCPeerConnection(cfg, con),
 
 var pc1icedone = false;
 
-$('#myModal').modal('show');
+console.log("hiding modal");
+$('#showLocalOffer').modal('hide');
+$('#createOrJoin').modal('show');
 
-document.getElementById('userInfo').addEventListener('click', function() {
-    console.log("click");
-    $('#myModal').modal('hide');
+document.getElementById('joinBtn').addEventListener('click', function() {
+    console.log("joinBtn cb");
+    $('#createOrJoin').modal('hide');
+}, true);
+
+document.getElementById('createBtn').addEventListener('click', function() {
+    console.log("createBtn cb");
+    $('#createOrJoin').modal('hide');
+    $('#showLocalOffer').modal('show');
 }, true);
 
 function setupDC1() {
@@ -61,9 +69,8 @@ getUserMedia({'audio':true, fake:true}, function (stream) {
     pc1.createOffer(function (offerDesc) {
         console.log("Got offer", offerDesc);
         pc1.setLocalDescription(offerDesc);
-        document.localOfferForm.localOffer.value = JSON.stringify(offerDesc);
+        $('#localOffer').html(JSON.stringify(offerDesc));
     }, function () { console.warn("No create offer"); });
-
 }, function () { console.warn("No audio"); });
 
 pc1.onicecandidate = function (e) {
