@@ -1,83 +1,3 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>WebRTC p2p data</title>
-    <script src="js/adapter.js"></script>
-    <script src="js/jquery-2.0.0.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
-</head>
-<body>
-Testing WebRTC connection.
-
-<button id=msg1 type=button>PC1 -> PC2</button>
-<button id=msg2 type=button>PC2 -> PC1</button>
-
-<form name="localOfferForm">
-  <p>Local offer:</p>
-  <textarea name="localOffer" rows="10" cols="50"></textarea>
-  <br>
-</form>
-
-<form name="remoteOfferForm">
-  <p>Remote offer:</p>
-  <textarea name="remoteOffer" rows="10" cols="50"></textarea>
-  <br>
-<input type="button" value="Handle remote offer" name="remoteOfferButton" onClick="remoteOfferClick()">
-</form>
-
-<form name="localAnswerForm">
-  <p>Local answer:</p>
-  <textarea name="localAnswer" rows="10" cols="50"></textarea>
-  <br>
-</form>
-
-<form name="remoteAnswerForm">
-  <p>Remote answer:</p>
-  <textarea name="remoteAnswer" rows="10" cols="50"></textarea>
-  <br>
-  <input type="button" value="Handle remote answer" name="remoteAnswerButton" onClick="remoteAnswerClick()">
-</form>
-
-<form name="localICECandidateForm">
-  <p>Local ICE Candidate:</p>
-  <textarea name="localICECandidate" rows="10" cols="50"></textarea>
-  <br>
-</form>
-
-<form name="remoteICECandidateForm">
-  <p>Remote ICE Candidate:</p>
-  <textarea name="remoteICECandidate" rows="10" cols="50"></textarea>
-  <br>
-  <input type="button" value="Handle remote ICECandidate" name="remoteICECandidateButton" onClick="remoteICECandidateClick()">
-</form>
-
-<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <h3 id="myModalLabel">Foo</h3>
-  </div>
-  <div class="modal-body">
-	  <div id="nickname_control" class="control-group">
-	    <div class="controls">
-	      <input type="text" id="NickName" placeholder="Nickname" autofocus>
-	      <span class="help-inline"></span>
-	    </div>
-	  </div>
-    <label class="radio">
-      Quux<input type="radio" name="options" value="b" checked>
-    </label>
-    <label class="radio">
-      Baz<input type="radio" name="options" value="g">
-    </label>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-primary" id="userInfo" data-dismiss="modal" aria-hidden="true">Bar</button>
-  </div>
-</div>
-
-<script>
 /* See also:
     http://www.html5rocks.com/en/tutorials/webrtc/basics/
     https://code.google.com/p/webrtc-samples/source/browse/trunk/apprtc/index.html
@@ -129,7 +49,7 @@ function setupDC1() {
         console.log("Created datachannel (pc1)");
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
-        }
+        };
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
 
@@ -149,7 +69,7 @@ getUserMedia({'audio':true, fake:true}, function (stream) {
 pc1.onicecandidate = function (e) {
     console.log("ICE candidate (pc1)", e);
     if (e.candidate) {
-//handleCandidateFromPC1(e.candidate)
+        //handleCandidateFromPC1(e.candidate)
         if (!pc1icedone) {
             document.localICECandidateForm.localICECandidate.value = JSON.stringify(e.candidate);
             pc1icedone = true;
@@ -158,7 +78,7 @@ pc1.onicecandidate = function (e) {
 };
 
 pc1.onconnection = function() {
-}
+};
 
 function handleAnswerFromPC2(answerDesc) {
     pc1.setRemoteDescription(answerDesc);
@@ -187,8 +107,8 @@ pc2.ondatachannel = function (e) {
     dc2 = datachannel;
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
-    }
-}
+    };
+};
 
 function handleOfferFromPC1(offerDesc) {
     pc2.setRemoteDescription(offerDesc);
@@ -214,15 +134,11 @@ pc2.onaddstream = function (e) {
     var el = new Audio();
     el.autoplay = true;
     attachMediaStream(el, e.stream);
-}
+};
 
 pc2.onconnection = function() {
-}
+};
 
 document.getElementById('msg2').addEventListener('click', function () {
     if (dc2) dc2.send("pong");
 }, false);
-
-</script>
-</body>
-</html>
