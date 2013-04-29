@@ -38,17 +38,42 @@ var pc1icedone = false;
 
 console.log("hiding modal");
 $('#showLocalOffer').modal('hide');
+$('#getRemoteAnswer').modal('hide');
 $('#createOrJoin').modal('show');
-
-document.getElementById('joinBtn').addEventListener('click', function() {
-    console.log("joinBtn cb");
-    $('#createOrJoin').modal('hide');
-}, true);
 
 document.getElementById('createBtn').addEventListener('click', function() {
     console.log("createBtn cb");
-    $('#createOrJoin').modal('hide');
     $('#showLocalOffer').modal('show');
+}, true);
+
+document.getElementById('joinBtn').addEventListener('click', function() {
+    $('#getRemoteOffer').modal('show');
+}, true);
+
+document.getElementById('offerSentBtn').addEventListener('click', function() {
+    console.log('offer sent cb');
+    $('#getRemoteAnswer').modal('show');
+}, true);
+
+document.getElementById('offerRecdBtn').addEventListener('click', function() {
+    console.log('offer recd cb');
+    var offer = $('#remoteOffer').val();
+    console.log('offer is ' + offer);
+    var offerDesc = new RTCSessionDescription(JSON.parse(offer));
+    handleOfferFromPC1(offerDesc);
+    $('#showLocalAnswer').modal('show');
+}, true);
+
+document.getElementById('answerSentBtn').addEventListener('click', function() {
+    console.log('answer sent cb');
+    // wait
+}, true);
+
+document.getElementById('answerRecdBtn').addEventListener('click', function() {
+    console.log('answer recd cb');
+    var answer = $('#remoteAnswer').val();
+    var answerDesc = new RTCSessionDescription(JSON.parse(answer));
+    handleAnswerFromPC2(answerDesc);
 }, true);
 
 function setupDC1() {
@@ -85,6 +110,7 @@ pc1.onicecandidate = function (e) {
 };
 
 pc1.onconnection = function() {
+    console.log("pc1: datachannel connected");
 };
 
 function handleAnswerFromPC2(answerDesc) {
@@ -122,14 +148,14 @@ function handleOfferFromPC1(offerDesc) {
     pc2.createAnswer(function (answerDesc) {
         console.log("Got answer", answerDesc);
         pc2.setLocalDescription(answerDesc);
-        document.localAnswerForm.localAnswer.value = JSON.stringify(answerDesc);
-        // handleAnswerFromPC2(answerDesc); // cjb
+        $('#localAnswer').html(JSON.stringify(answerDesc));
     }, function () { console.warn("No create answer"); });
 }
 
 pc2.onicecandidate = function (e) {
     console.log("ICE candidate (pc2)", e);
-    if (e.candidate) handleCandidateFromPC2(e.candidate)
+    if (e.candidate)
+      handleCandidateFromPC2(e.candidate);
 };
 
 function handleCandidateFromPC1(iceCandidate) {
@@ -144,6 +170,7 @@ pc2.onaddstream = function (e) {
 };
 
 pc2.onconnection = function() {
+    console.log("pc2: datachannel connected");
 };
 
 document.getElementById('msg2').addEventListener('click', function () {

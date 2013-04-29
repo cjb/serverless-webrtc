@@ -16,39 +16,6 @@ Testing WebRTC connection.
 <button id=msg1 type=button>PC1 -> PC2</button>
 <button id=msg2 type=button>PC2 -> PC1</button>
 
-<form name="remoteOfferForm">
-  <p>Remote offer:</p>
-  <textarea id="remoteOffer" name="remoteOffer" rows="10" cols="50"></textarea>
-  <br>
-<input type="button" value="Handle remote offer" name="remoteOfferButton" onClick="remoteOfferClick()">
-</form>
-
-<form name="localAnswerForm">
-  <p>Local answer:</p>
-  <textarea id="localAnswer" name="localAnswer" rows="10" cols="50"></textarea>
-  <br>
-</form>
-
-<form name="remoteAnswerForm">
-  <p>Remote answer:</p>
-  <textarea id="remoteAnswer" name="remoteAnswer" rows="10" cols="50"></textarea>
-  <br>
-  <input type="button" value="Handle remote answer" name="remoteAnswerButton" onClick="remoteAnswerClick()">
-</form>
-
-<form name="localICECandidateForm">
-  <p>Local ICE Candidate:</p>
-  <textarea id="localICECandidate" name="localICECandidate" rows="10" cols="50"></textarea>
-  <br>
-</form>
-
-<form name="remoteICECandidateForm">
-  <p>Remote ICE Candidate:</p>
-  <textarea id="remoteICECandidate" name="remoteICECandidate" rows="10" cols="50"></textarea>
-  <br>
-  <input type="button" value="Handle remote ICECandidate" name="remoteICECandidateButton" onClick="remoteICECandidateClick()">
-</form>
-
 <div class="modal" id="showLocalOffer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Send your local offer to someone else</h3>
@@ -60,6 +27,48 @@ Testing WebRTC connection.
   </div>
   <div class="modal-footer">
     <button class="btn btn-primary" id="offerSentBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+  </div>
+</div>
+
+<div class="modal" id="showLocalAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+  <div class="modal-header">
+    <h3 id="myModalLabel">Send your local answer to someone else</h3>
+  </div>
+  <div class="modal-body">
+    Here's your "answer" -- it tells someone else how to connect to you.  Send the whole thing to them, for example in an instant message or e-mail.
+  <br/>
+  <textarea class="input-large" id="localAnswer" name="localAnswer" rows="10" cols="100"></textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" id="answerSentBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+  </div>
+</div>
+
+<div class="modal" id="getRemoteOffer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+  <div class="modal-header">
+    <h3 id="myModalLabel">Paste the "offer" you received</h3>
+  </div>
+  <div class="modal-body">
+    Now paste in the "offer" that was sent back to you.
+  <br/>
+  <textarea class="input-large" id="remoteOffer" name="remoteOffer" rows="10" cols="100"></textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" id="offerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+  </div>
+</div>
+
+<div class="modal" id="getRemoteAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+  <div class="modal-header">
+    <h3 id="myModalLabel">Paste the "answer" you received</h3>
+  </div>
+  <div class="modal-body">
+    Now paste in the "answer" that was sent back to you.
+  <br/>
+  <textarea class="input-large" id="remoteAnswer" name="remoteAnswer" rows="10" cols="100"></textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" id="answerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
   </div>
 </div>
 
