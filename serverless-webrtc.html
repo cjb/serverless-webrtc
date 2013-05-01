@@ -16,7 +16,7 @@ Testing WebRTC connection.
 <button id=msg1 type=button>PC1 -> PC2</button>
 <button id=msg2 type=button>PC2 -> PC1</button>
 
-<div class="modal" id="showLocalOffer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<div class="modal" id="showLocalOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Send your local offer to someone else</h3>
   </div>
@@ -30,7 +30,7 @@ Testing WebRTC connection.
   </div>
 </div>
 
-<div class="modal" id="showLocalAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<div class="modal" id="showLocalAnswer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Send your local answer to someone else</h3>
   </div>
@@ -44,7 +44,7 @@ Testing WebRTC connection.
   </div>
 </div>
 
-<div class="modal" id="getRemoteOffer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<div class="modal" id="getRemoteOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Paste the "offer" you received</h3>
   </div>
@@ -58,7 +58,7 @@ Testing WebRTC connection.
   </div>
 </div>
 
-<div class="modal" id="getRemoteAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+<div class="modal" id="getRemoteAnswer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Paste the "answer" you received</h3>
   </div>
@@ -72,7 +72,19 @@ Testing WebRTC connection.
   </div>
 </div>
 
-<div class="modal" id="createOrJoin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal" id="waitForConnection" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+  <div class="modal-header">
+    <h3 id="myModalLabel">Waiting for connection</h3>
+  </div>
+  <div class="modal-body">
+    This dialog will disappear when a connection is made.
+  </div>
+  <div class="spinner" align="center">
+    <img src="img/spinner.gif"></img>
+  </div>
+</div>
+
+<div class="modal" id="createOrJoin" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <h3 id="myModalLabel">Create or join a room?</h3>
   </div>

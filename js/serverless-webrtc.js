@@ -39,6 +39,7 @@ var pc1icedone = false;
 console.log("hiding modal");
 $('#showLocalOffer').modal('hide');
 $('#getRemoteAnswer').modal('hide');
+$('#waitForConnection').modal('hide');
 $('#createOrJoin').modal('show');
 
 document.getElementById('createBtn').addEventListener('click', function() {
@@ -66,7 +67,7 @@ document.getElementById('offerRecdBtn').addEventListener('click', function() {
 
 document.getElementById('answerSentBtn').addEventListener('click', function() {
     console.log('answer sent cb');
-    // wait
+    $('#waitForConnection').modal('show');
 }, true);
 
 document.getElementById('answerRecdBtn').addEventListener('click', function() {
@@ -74,6 +75,7 @@ document.getElementById('answerRecdBtn').addEventListener('click', function() {
     var answer = $('#remoteAnswer').val();
     var answerDesc = new RTCSessionDescription(JSON.parse(answer));
     handleAnswerFromPC2(answerDesc);
+    $('#waitForConnection').modal('show');
 }, true);
 
 function setupDC1() {
@@ -111,6 +113,8 @@ pc1.onicecandidate = function (e) {
 
 pc1.onconnection = function() {
     console.log("pc1: datachannel connected");
+    $('#waitForConnection').modal('hide');
+    $('#waitForConnection').remove();
 };
 
 function handleAnswerFromPC2(answerDesc) {
@@ -171,6 +175,11 @@ pc2.onaddstream = function (e) {
 
 pc2.onconnection = function() {
     console.log("pc2: datachannel connected");
+    $('#waitForConnection').modal('hide');
+    // If we didn't call remove() here, there would be a race:
+    //   - first onconnection() hides the dialog, then someone clicks
+    //     on answerSentBtn which shows it, and it stays shown forever.
+    $('#waitForConnection').remove();
 };
 
 document.getElementById('msg2').addEventListener('click', function () {
