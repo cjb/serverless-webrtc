@@ -14,28 +14,6 @@ function writeToChatLog(message, message_type) {
     document.getElementById('chatlog').innerHTML += '<p class=\"' + message_type + '\">' + message + '</p>';
 }
 
-function remoteOfferClick() {
-    var offer = document.remoteOfferForm.remoteOffer.value;
-    console.log(offer);
-    var offerJSON = JSON.parse(offer);
-    var offerDesc = new RTCSessionDescription(offerJSON);
-    handleOfferFromPC1(offerDesc);
-}
-
-function remoteAnswerClick() {
-    var answer = document.remoteAnswerForm.remoteAnswer.value;
-    var answerDesc = new RTCSessionDescription(JSON.parse(answer));
-    writeToChatLog("Received remote answer", "text-success");
-    writeToChatLog(answer, "text-success");
-    handleAnswerFromPC2(answerDesc);
-
-}
-
-function remoteICECandidateClick() {
-    var candidate = document.remoteICECandidateForm.remoteICECandidate.value;
-    var candidateDesc = new RTCIceCandidate(JSON.parse(candidate));
-    handleCandidateFromPC2(candidateDesc);
-}
 /* THIS IS ALICE, THE CALLER/SENDER */
 
 var pc1 = new RTCPeerConnection(cfg, con),
@@ -43,14 +21,12 @@ var pc1 = new RTCPeerConnection(cfg, con),
 
 var pc1icedone = false;
 
-console.log("hiding modal");
 $('#showLocalOffer').modal('hide');
 $('#getRemoteAnswer').modal('hide');
 $('#waitForConnection').modal('hide');
 $('#createOrJoin').modal('show');
 
 document.getElementById('createBtn').addEventListener('click', function() {
-    console.log("createBtn cb");
     $('#showLocalOffer').modal('show');
 }, true);
 
@@ -59,7 +35,6 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 }, true);
 
 document.getElementById('offerSentBtn').addEventListener('click', function() {
-    console.log('offer sent cb');
     $('#getRemoteAnswer').modal('show');
 }, true);
 
@@ -73,12 +48,10 @@ document.getElementById('offerRecdBtn').addEventListener('click', function() {
 }, true);
 
 document.getElementById('answerSentBtn').addEventListener('click', function() {
-    console.log('answer sent cb');
     $('#waitForConnection').modal('show');
 }, true);
 
 document.getElementById('answerRecdBtn').addEventListener('click', function() {
-    console.log('answer recd cb');
     var answer = $('#remoteAnswer').val();
     var answerDesc = new RTCSessionDescription(JSON.parse(answer));
     handleAnswerFromPC2(answerDesc);
@@ -104,7 +77,7 @@ getUserMedia({'audio':true, fake:true}, function (stream) {
         console.log("Created local offer", offerDesc);
         pc1.setLocalDescription(offerDesc);
         $('#localOffer').html(JSON.stringify(offerDesc));
-    }, function () { console.warn("No create offer"); });
+    }, function () { console.warn("Couldn't create offer"); });
 }, function () { console.warn("No audio"); });
 
 pc1.onicecandidate = function (e) {
