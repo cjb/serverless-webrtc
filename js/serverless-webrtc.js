@@ -19,6 +19,10 @@ function writeToChatLog(message, message_type) {
 var pc1 = new RTCPeerConnection(cfg, con),
     dc1 = null, tn1 = null;
 
+// Since the same JS file contains code for both sides of the connection,
+// activedb tracks which of the two possible datachannel variables we're using.
+var activedc;
+
 var pc1icedone = false;
 
 $('#showLocalOffer').modal('hide');
@@ -41,7 +45,7 @@ $('#offerSentBtn').click(function() {
 $('#offerRecdBtn').click(function() {
     var offer = $('#remoteOffer').val();
     var offerDesc = new RTCSessionDescription(JSON.parse(offer));
-    console.log("Received remote offer", offer);
+    console.log("Received remote offer", offerDesc);
     writeToChatLog("Received remote offer", "text-success");
     handleOfferFromPC1(offerDesc);
     $('#showLocalAnswer').modal('show');
@@ -59,15 +63,18 @@ $('#answerRecdBtn').click(function() {
 });
 
 $('#sendMessageBtn').click(function() {
+    writeToChatLog($('#messageTextBox').val(), "text-success");
+    activedc.send($('#messageTextBox').val());
 });
 
 function setupDC1() {
     try {
         dc1 = pc1.createDataChannel('test', {reliable:false});
+        activedc = dc1;
         console.log("Created datachannel (pc1)");
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
-            writeToChatLog(e.data, "text-failure");
+            writeToChatLog(e.data, "text-info");
         };
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
@@ -96,7 +103,7 @@ pc1.onicecandidate = function (e) {
 };
 
 function handleOnconnection() {
-    console.log("pc1: datachannel connected");
+    console.log("Datachannel connected");
     writeToChatLog("Datachannel connected", "text-success");
     $('#waitForConnection').modal('hide');
     // If we didn't call remove() here, there would be a race on pc2:
@@ -129,9 +136,10 @@ pc2.ondatachannel = function (e) {
     var datachannel = e.channel || e; // Chrome sends event, FF sends raw channel
     console.log("Received datachannel (pc2)", arguments);
     dc2 = datachannel;
+    activedc = dc2;
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
-        writeToChatLog(e.data, "text-success");
+        writeToChatLog(e.data, "text-info");
     };
 };
 
