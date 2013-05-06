@@ -26,37 +26,40 @@ $('#getRemoteAnswer').modal('hide');
 $('#waitForConnection').modal('hide');
 $('#createOrJoin').modal('show');
 
-document.getElementById('createBtn').addEventListener('click', function() {
+$('#createBtn').click(function() {
     $('#showLocalOffer').modal('show');
-}, true);
+});
 
-document.getElementById('joinBtn').addEventListener('click', function() {
+$('#joinBtn').click(function() {
     $('#getRemoteOffer').modal('show');
-}, true);
+});
 
-document.getElementById('offerSentBtn').addEventListener('click', function() {
+$('#offerSentBtn').click(function() {
     $('#getRemoteAnswer').modal('show');
-}, true);
+});
 
-document.getElementById('offerRecdBtn').addEventListener('click', function() {
+$('#offerRecdBtn').click(function() {
     var offer = $('#remoteOffer').val();
     var offerDesc = new RTCSessionDescription(JSON.parse(offer));
     console.log("Received remote offer", offer);
     writeToChatLog("Received remote offer", "text-success");
     handleOfferFromPC1(offerDesc);
     $('#showLocalAnswer').modal('show');
-}, true);
+});
 
-document.getElementById('answerSentBtn').addEventListener('click', function() {
+$('#answerSentBtn').click(function() {
     $('#waitForConnection').modal('show');
-}, true);
+});
 
-document.getElementById('answerRecdBtn').addEventListener('click', function() {
+$('#answerRecdBtn').click(function() {
     var answer = $('#remoteAnswer').val();
     var answerDesc = new RTCSessionDescription(JSON.parse(answer));
     handleAnswerFromPC2(answerDesc);
     $('#waitForConnection').modal('show');
-}, true);
+});
+
+$('#sendMessageBtn').click(function() {
+});
 
 function setupDC1() {
     try {
@@ -64,6 +67,7 @@ function setupDC1() {
         console.log("Created datachannel (pc1)");
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
+            writeToChatLog(e.data, "text-failure");
         };
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
@@ -127,6 +131,7 @@ pc2.ondatachannel = function (e) {
     dc2 = datachannel;
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
+        writeToChatLog(e.data, "text-success");
     };
 };
 
