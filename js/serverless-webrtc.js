@@ -10,6 +10,10 @@ var cfg = {"iceServers":[{"url":"stun:23.21.150.121"}]},
 
 // createDataChannel needs `open /Applications/Google\ Chrome\ Canary.app --args --enable-data-channels` :-(
 
+function writeToChatLog(message, message_type) {
+    document.getElementById('chatlog').innerHTML += '<p class=\"' + message_type + '\">' + message + '</p>';
+}
+
 function remoteOfferClick() {
     var offer = document.remoteOfferForm.remoteOffer.value;
     console.log(offer);
@@ -21,7 +25,10 @@ function remoteOfferClick() {
 function remoteAnswerClick() {
     var answer = document.remoteAnswerForm.remoteAnswer.value;
     var answerDesc = new RTCSessionDescription(JSON.parse(answer));
+    writeToChatLog("Received remote answer", "text-success");
+    writeToChatLog(answer, "text-success");
     handleAnswerFromPC2(answerDesc);
+
 }
 
 function remoteICECandidateClick() {
@@ -57,10 +64,10 @@ document.getElementById('offerSentBtn').addEventListener('click', function() {
 }, true);
 
 document.getElementById('offerRecdBtn').addEventListener('click', function() {
-    console.log('offer recd cb');
     var offer = $('#remoteOffer').val();
-    console.log('offer is ' + offer);
     var offerDesc = new RTCSessionDescription(JSON.parse(offer));
+    console.log("Received remote offer", offer);
+    writeToChatLog("Received remote offer", "text-success");
     handleOfferFromPC1(offerDesc);
     $('#showLocalAnswer').modal('show');
 }, true);
@@ -94,7 +101,7 @@ getUserMedia({'audio':true, fake:true}, function (stream) {
     setupDC1();
     //tn1 = pc1.createDTMFSender(pc1.getLocalStreams()[0].getAudioTracks()[0])
     pc1.createOffer(function (offerDesc) {
-        console.log("Got offer", offerDesc);
+        console.log("Created local offer", offerDesc);
         pc1.setLocalDescription(offerDesc);
         $('#localOffer').html(JSON.stringify(offerDesc));
     }, function () { console.warn("No create offer"); });
@@ -111,24 +118,27 @@ pc1.onicecandidate = function (e) {
     }
 };
 
-pc1.onconnection = function() {
+function handleOnconnection() {
     console.log("pc1: datachannel connected");
+    writeToChatLog("Datachannel connected", "text-success");
     $('#waitForConnection').modal('hide');
+    // If we didn't call remove() here, there would be a race on pc2:
+    //   - first onconnection() hides the dialog, then someone clicks
+    //     on answerSentBtn which shows it, and it stays shown forever.
     $('#waitForConnection').remove();
-};
+}
+
+pc1.onconnection = handleOnconnection;
 
 function handleAnswerFromPC2(answerDesc) {
+    console.log("Received remote answer: ", answerDesc);
+    writeToChatLog("Received remote answer", "text-success");
     pc1.setRemoteDescription(answerDesc);
 }
 
 function handleCandidateFromPC2(iceCandidate) {
     pc1.addIceCandidate(iceCandidate);
 }
-
-document.getElementById('msg1').addEventListener('click', function () {
-    if (tn1) tn1.insertDTMF('123213');
-    if (dc1) dc1.send("ping");
-}, false);
 
 
 /* THIS IS BOB, THE ANSWERER/RECEIVER */
@@ -150,7 +160,8 @@ pc2.ondatachannel = function (e) {
 function handleOfferFromPC1(offerDesc) {
     pc2.setRemoteDescription(offerDesc);
     pc2.createAnswer(function (answerDesc) {
-        console.log("Got answer", answerDesc);
+        writeToChatLog("Created local answer", "text-success");
+        console.log("Created local answer: ", answerDesc);
         pc2.setLocalDescription(answerDesc);
         $('#localAnswer').html(JSON.stringify(answerDesc));
     }, function () { console.warn("No create answer"); });
@@ -173,15 +184,4 @@ pc2.onaddstream = function (e) {
     attachMediaStream(el, e.stream);
 };
 
-pc2.onconnection = function() {
-    console.log("pc2: datachannel connected");
-    $('#waitForConnection').modal('hide');
-    // If we didn't call remove() here, there would be a race:
-    //   - first onconnection() hides the dialog, then someone clicks
-    //     on answerSentBtn which shows it, and it stays shown forever.
-    $('#waitForConnection').remove();
-};
-
-document.getElementById('msg2').addEventListener('click', function () {
-    if (dc2) dc2.send("pong");
-}, false);
+pc2.onconnection = handleOnconnection;

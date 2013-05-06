@@ -11,10 +11,19 @@
     <link href="css/serverless-webrtc-bootstrap.css" rel="stylesheet">
 </head>
 <body>
-Testing WebRTC connection.
-
-<button id=msg1 type=button>PC1 -> PC2</button>
-<button id=msg2 type=button>PC2 -> PC1</button>
+<div class="span1">
+  <fieldset class="well">
+    <p class="head muted">
+      Serverless WebRTC chat demonstration.
+    </p>
+    <div class="text-info" id="chatlog" style="height:350px; overflow:auto;">
+    </div>
+  </fieldset>
+  <form class="form-inline">
+    <input type="text" id="messageTextBox" placeholder="Type your message here">
+    <button type="button" id="sendMessage" class="btn">Send message</button>
+  </form>
+</div>
 
 <div class="modal" id="showLocalOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
