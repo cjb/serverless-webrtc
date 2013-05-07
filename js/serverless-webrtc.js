@@ -62,6 +62,10 @@ function sendMessage() {
     writeToChatLog($('#messageTextBox').val(), "text-success");
     activedc.send($('#messageTextBox').val());
     $('#messageTextBox').val("");
+
+    // Scroll chat text area to the bottom on new input.
+    $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+
     return false;
 };
 
@@ -73,6 +77,8 @@ function setupDC1() {
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
             writeToChatLog(e.data, "text-info");
+            // Scroll chat text area to the bottom on new input.
+            $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
         };
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
@@ -139,6 +145,8 @@ pc2.ondatachannel = function (e) {
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
         writeToChatLog(e.data, "text-info");
+        // Scroll chat text area to the bottom on new input.
+        $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
     };
 };
 
