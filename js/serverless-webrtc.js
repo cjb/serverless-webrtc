@@ -10,10 +10,6 @@ var cfg = {"iceServers":[{"url":"stun:23.21.150.121"}]},
 
 // createDataChannel needs `open /Applications/Google\ Chrome\ Canary.app --args --enable-data-channels` :-(
 
-function writeToChatLog(message, message_type) {
-    document.getElementById('chatlog').innerHTML += '<p class=\"' + message_type + '\">' + message + '</p>';
-}
-
 /* THIS IS ALICE, THE CALLER/SENDER */
 
 var pc1 = new RTCPeerConnection(cfg, con),
@@ -171,3 +167,20 @@ pc2.onaddstream = function (e) {
 };
 
 pc2.onconnection = handleOnconnection;
+
+function getTimestamp() {
+    var totalSec = new Date().getTime() / 1000;
+    var hours = parseInt( totalSec / 3600 ) % 24;
+    var minutes = parseInt( totalSec / 60 ) % 60;
+    var seconds = parseInt(totalSec % 60);
+
+    var result = (hours < 10 ? "0" + hours : hours) + ":" +
+                 (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                 (seconds  < 10 ? "0" + seconds : seconds);
+
+    return result;
+}
+
+function writeToChatLog(message, message_type) {
+    document.getElementById('chatlog').innerHTML += '<p class=\"' + message_type + '\">' + "[" + getTimestamp() + "] " + message + '</p>';
+}
