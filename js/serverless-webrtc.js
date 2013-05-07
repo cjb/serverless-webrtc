@@ -58,6 +58,11 @@ $('#answerRecdBtn').click(function() {
     $('#waitForConnection').modal('show');
 });
 
+$('#fileBtn').change(function() {
+    var file = this.files[0];
+    console.log(file);
+});
+
 function sendMessage() {
     writeToChatLog($('#messageTextBox').val(), "text-success");
     activedc.send($('#messageTextBox').val());

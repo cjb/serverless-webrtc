@@ -23,6 +23,9 @@
     <input type="text" id="messageTextBox" placeholder="Type your message here">
     <button type="button" id="sendMessageBtn" class="btn">Send message</button>
   </form>
+  <form class="form-inline" onSubmit="sendFile()">
+    <input type="file" id="fileBtn">
+  </form>
 </div>
 
 <div class="modal" id="showLocalOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
@@ -63,7 +66,7 @@
   <textarea class="input-large" id="remoteOffer" name="remoteOffer" rows="10" cols="100"></textarea>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" id="offerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+    <button class="btn btn-primary" id="offerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I pasted it.</button>
   </div>
 </div>
 
@@ -77,7 +80,7 @@
   <textarea class="input-large" id="remoteAnswer" name="remoteAnswer" rows="10" cols="100"></textarea>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" id="answerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+    <button class="btn btn-primary" id="answerRecdBtn" data-dismiss="modal" aria-hidden="true">Okay, I pasted it.</button>
   </div>
 </div>
 
