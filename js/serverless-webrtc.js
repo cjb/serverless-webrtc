@@ -58,10 +58,12 @@ $('#answerRecdBtn').click(function() {
     $('#waitForConnection').modal('show');
 });
 
-$('#sendMessageBtn').click(function() {
+function sendMessage() {
     writeToChatLog($('#messageTextBox').val(), "text-success");
     activedc.send($('#messageTextBox').val());
-});
+    $('#messageTextBox').val("");
+    return false;
+};
 
 function setupDC1() {
     try {
@@ -106,6 +108,7 @@ function handleOnconnection() {
     //   - first onconnection() hides the dialog, then someone clicks
     //     on answerSentBtn which shows it, and it stays shown forever.
     $('#waitForConnection').remove();
+    $('#messageTextBox').focus();
 }
 
 pc1.onconnection = handleOnconnection;
