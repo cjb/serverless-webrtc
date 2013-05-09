@@ -76,10 +76,6 @@ function sendMessage() {
     return false;
 };
 
-function sendFile() {
-    return false;
-};
-
 function setupDC1() {
     try {
         dc1 = pc1.createDataChannel('test', {reliable:false});

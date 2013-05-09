@@ -3,11 +3,10 @@
  */
 /* For documentation and examples: http://bit.ly/RTCDataConnection */
 
-
 var FileSender = {
     send: function (config) {
         var channel = config.channel,
-            file = config.file;
+               file = config.file;
 
         /* if firefox nightly: share file blob directly */
         if (moz) {
@@ -17,7 +16,7 @@ var FileSender = {
                 type: 'file'
             });
 
-            /* sending entire file at once */
+            /* sending the entire file at once */
             channel.send({
                 file: file
             });
@@ -32,8 +31,9 @@ var FileSender = {
             reader.onload = onReadAsDataURL;
         }
 
-        var packetSize = 1000,
+        var packetSize = 1000 /* chars */ ,
             textToTransfer = '',
+            numberOfPackets = 0,
             packets = 0;
 
         function onReadAsDataURL(event, text) {
@@ -43,15 +43,18 @@ var FileSender = {
 
             if (event) {
                 text = event.target.result;
-                packets = data.packets = parseInt(text.length / packetSize);
+                numberOfPackets = packets = data.packets = parseInt(text.length / packetSize);
             }
 
-            if (config.getFileStats) config.getFileStats({
-                    items: packets--,
-                    file: file
+            if (config.onFileProgress)
+                config.onFileProgress({
+                    remaining: packets--,
+                    length: numberOfPackets,
+                    sent: numberOfPackets - packets
                 });
 
-            if (text.length > packetSize) data.message = text.slice(0, packetSize);
+            if (text.length > packetSize)
+                data.message = text.slice(0, packetSize);
             else {
                 data.message = text;
                 data.last = true;
@@ -74,13 +77,15 @@ var FileSender = {
 
 function FileReceiver() {
     var content = [],
-        fileName = '',
-        packets = 0;
+    fileName = '',
+    packets = 0,
+    numberOfPackets = 0;
 
     function receive(data, config) {
         /* if firefox nightly & file blob shared */
         if (moz) {
-            if (data.fileName) fileName = data.fileName;
+            if (data.fileName)
+                fileName = data.fileName;
             if (data.size) {
                 var reader = new window.FileReader();
                 reader.readAsDataURL(data);
@@ -92,17 +97,22 @@ function FileReceiver() {
         }
 
         if (!moz) {
-            if (data.packets) packets = parseInt(data.packets);
+            if (data.packets)
+		numberOfPackets = packets = parseInt(data.packets);
 
-            if (config.getFileStats) config.getFileStats({
-                    items: packets--
+            if (config.onFileProgress)
+                config.onFileProgress({
+                    remaining: packets--,
+                    length: numberOfPackets,
+                    received: numberOfPackets - packets
                 });
 
             content.push(data.message);
 
             if (data.last) {
                 FileSaver.SaveToDisk(content.join(''), data.name);
-                if (config.onFileReceived) config.onFileReceived(data.name);
+                if (config.onFileReceived)
+                    config.onFileReceived(data.name);
                 content = [];
             }
         }
@@ -115,9 +125,9 @@ function FileReceiver() {
 
 var FileSaver = {
     SaveToDisk: function (fileUrl, fileName) {
-        var save = document.createElement("a");
+        var save = document.createElement('a');
         save.href = fileUrl;
-        save.target = "_blank";
+        save.target = '_blank';
         save.download = fileName || fileUrl;
 
         var evt = document.createEvent('MouseEvents');
