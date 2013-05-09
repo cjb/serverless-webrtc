@@ -64,12 +64,14 @@ $('#fileBtn').change(function() {
 });
 
 function sendMessage() {
-    writeToChatLog($('#messageTextBox').val(), "text-success");
-    activedc.send($('#messageTextBox').val());
-    $('#messageTextBox').val("");
+    if ($('#messageTextBox').val()) {
+        writeToChatLog($('#messageTextBox').val(), "text-success");
+        activedc.send($('#messageTextBox').val());
+        $('#messageTextBox').val("");
 
-    // Scroll chat text area to the bottom on new input.
-    $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+        // Scroll chat text area to the bottom on new input.
+        $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+    }
 
     return false;
 };
