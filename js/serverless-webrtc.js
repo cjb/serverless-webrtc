@@ -61,8 +61,28 @@ $('#answerRecdBtn').click(function() {
 $('#fileBtn').change(function() {
     var file = this.files[0];
     console.log(file);
+
+    sendFile(file);
 });
 
+function fileSent(file) {
+    console.log(file + " sent");
+}
+
+function fileProgress(file) {
+    console.log(file + " progress");
+}
+
+function sendFile(data) {
+    if (data.size) {
+	FileSender.send({
+	    file: data,
+	    channel: activedc,
+	    onFileSent: fileSent,
+	    onFileProgress: fileProgress,
+	});
+    }
+}
 function sendMessage() {
     if ($('#messageTextBox').val()) {
         writeToChatLog($('#messageTextBox').val(), "text-success");
@@ -83,6 +103,9 @@ function setupDC1() {
         console.log("Created datachannel (pc1)");
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
+	    if (e.data.size) {
+		console.log("pc1: message is a file!");
+	    }
             writeToChatLog(e.data, "text-info");
             // Scroll chat text area to the bottom on new input.
             $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
@@ -151,6 +174,9 @@ pc2.ondatachannel = function (e) {
     activedc = dc2;
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
+	if (e.data.size) {
+	    console.log("pc2: message is a file!");
+	}
         writeToChatLog(e.data, "text-info");
         // Scroll chat text area to the bottom on new input.
         $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);

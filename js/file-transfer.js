@@ -3,6 +3,8 @@
  */
 /* For documentation and examples: http://bit.ly/RTCDataConnection */
 
+window.moz = !! navigator.mozGetUserMedia;
+
 var FileSender = {
     send: function (config) {
         var channel = config.channel,
