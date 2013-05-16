@@ -153,6 +153,7 @@ function handleOnconnection() {
     //   - first onconnection() hides the dialog, then someone clicks
     //     on answerSentBtn which shows it, and it stays shown forever.
     $('#waitForConnection').remove();
+    $('#showLocalAnswer').modal('hide');
     $('#messageTextBox').focus();
 }
 
@@ -232,8 +233,8 @@ pc2.onconnection = handleOnconnection;
 
 function getTimestamp() {
     var totalSec = new Date().getTime() / 1000;
-    var hours = parseInt( totalSec / 3600 ) % 24;
-    var minutes = parseInt( totalSec / 60 ) % 60;
+    var hours = parseInt(totalSec / 3600) % 24;
+    var minutes = parseInt(totalSec / 60) % 60;
     var seconds = parseInt(totalSec % 60);
 
     var result = (hours < 10 ? "0" + hours : hours) + ":" +
