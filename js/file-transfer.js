@@ -5,10 +5,24 @@
 
 window.moz = !! navigator.mozGetUserMedia;
 
+var RTCMultiSession = function(options) {
+    return {
+	send: function (message) {
+	    if (moz && message.file)
+		data = message.file;
+            else
+		data = JSON.stringify(message);
+
+	    activedc.send(data);
+	}
+    }
+};
+
+
 var FileSender = {
     send: function (config) {
-        var channel = config.channel,
-               file = config.file;
+        var channel = config.channel || new RTCMultiSession();
+        var file = config.file;
 
         /* if firefox nightly: share file blob directly */
         if (moz) {
@@ -86,9 +100,13 @@ function FileReceiver() {
     function receive(data, config) {
         /* if firefox nightly & file blob shared */
         if (moz) {
-            if (data.fileName)
-                fileName = data.fileName;
-            if (data.size) {
+            if (!data.size) {
+                var parsedData = JSON.parse(data);
+                if (parsedData.fileName) {
+                    fileName = parsedData.fileName;
+                }
+            }
+            else {
                 var reader = new window.FileReader();
                 reader.readAsDataURL(data);
                 reader.onload = function (event) {

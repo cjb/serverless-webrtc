@@ -77,7 +77,6 @@ function sendFile(data) {
     if (data.size) {
 	FileSender.send({
 	    file: data,
-	    channel: activedc,
 	    onFileSent: fileSent,
 	    onFileProgress: fileProgress,
 	});
@@ -85,8 +84,9 @@ function sendFile(data) {
 }
 function sendMessage() {
     if ($('#messageTextBox').val()) {
+	var channel = new RTCMultiSession();
         writeToChatLog($('#messageTextBox').val(), "text-success");
-        activedc.send($('#messageTextBox').val());
+        channel.send({message: $('#messageTextBox').val()});
         $('#messageTextBox').val("");
 
         // Scroll chat text area to the bottom on new input.
@@ -98,17 +98,26 @@ function sendMessage() {
 
 function setupDC1() {
     try {
+        var fileReceiver1 = new FileReceiver();
         dc1 = pc1.createDataChannel('test', {reliable:false});
         activedc = dc1;
         console.log("Created datachannel (pc1)");
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
-	    if (e.data.size) {
-		console.log("pc1: message is a file!");
-	    }
-            writeToChatLog(e.data, "text-info");
-            // Scroll chat text area to the bottom on new input.
-            $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+            if (e.data.size) {
+                fileReceiver1.receive(e.data, {});
+            }
+            else {
+                var data = JSON.parse(e.data);
+                if (data.type === 'file') {
+                    fileReceiver1.receive(e.data, {});
+                }
+                else {
+                    writeToChatLog(data.message, "text-info");
+                    // Scroll chat text area to the bottom on new input.
+                    $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+                }
+            }
         };
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
@@ -168,18 +177,27 @@ var pc2 = new RTCPeerConnection(cfg, con),
 var pc2icedone = false;
 
 pc2.ondatachannel = function (e) {
+    var fileReceiver2 = new FileReceiver();
     var datachannel = e.channel || e; // Chrome sends event, FF sends raw channel
     console.log("Received datachannel (pc2)", arguments);
     dc2 = datachannel;
     activedc = dc2;
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
-	if (e.data.size) {
-	    console.log("pc2: message is a file!");
-	}
-        writeToChatLog(e.data, "text-info");
-        // Scroll chat text area to the bottom on new input.
-        $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+        if (e.data.size) {
+            fileReceiver2.receive(e.data, {});
+        }
+        else {
+            var data = JSON.parse(e.data);
+            if (data.type === 'file') {
+                fileReceiver2.receive(e.data, {});
+            }
+            else {
+                writeToChatLog(data.message, "text-info");
+                // Scroll chat text area to the bottom on new input.
+                $('#chatlog').scrollTop($('#chatlog')[0].scrollHeight);
+            }
+        }
     };
 };
 
