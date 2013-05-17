@@ -8,15 +8,13 @@
 var cfg = {"iceServers":[{"url":"stun:23.21.150.121"}]},
     con = { 'optional': [{'DtlsSrtpKeyAgreement': true}, {'RtpDataChannels': true }] };
 
-// createDataChannel needs `open /Applications/Google\ Chrome\ Canary.app --args --enable-data-channels` :-(
-
 /* THIS IS ALICE, THE CALLER/SENDER */
 
 var pc1 = new RTCPeerConnection(cfg, con),
     dc1 = null, tn1 = null;
 
 // Since the same JS file contains code for both sides of the connection,
-// activedb tracks which of the two possible datachannel variables we're using.
+// activedc tracks which of the two possible datachannel variables we're using.
 var activedc;
 
 var pc1icedone = false;
@@ -126,7 +124,6 @@ getUserMedia({'audio':true, fake:true}, function (stream) {
     console.log("Got local audio", stream);
     pc1.addStream(stream);
     setupDC1();
-    //tn1 = pc1.createDTMFSender(pc1.getLocalStreams()[0].getAudioTracks()[0])
     pc1.createOffer(function (offerDesc) {
         console.log("Created local offer", offerDesc);
         pc1.setLocalDescription(offerDesc);
@@ -215,7 +212,7 @@ function handleOfferFromPC1(offerDesc) {
 pc2.onicecandidate = function (e) {
     console.log("ICE candidate (pc2)", e);
     if (e.candidate)
-      handleCandidateFromPC2(e.candidate);
+        handleCandidateFromPC2(e.candidate);
 };
 
 function handleCandidateFromPC1(iceCandidate) {
