@@ -99,7 +99,7 @@ function sendMessage() {
 function setupDC1() {
     try {
         var fileReceiver1 = new FileReceiver();
-        dc1 = pc1.createDataChannel('test', {reliable:false});
+        dc1 = pc1.createDataChannel('test', {reliable:true});
         activedc = dc1;
         console.log("Created datachannel (pc1)");
         dc1.onmessage = function (e) {
