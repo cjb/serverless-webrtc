@@ -150,8 +150,11 @@ var FileSaver = {
         save.target = '_blank';
         save.download = fileName || fileUrl;
 
-        var evt = document.createEvent('MouseEvents');
-        evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+        });
 
         save.dispatchEvent(evt);
 
