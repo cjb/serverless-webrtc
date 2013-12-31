@@ -13,4 +13,7 @@ repository and open serverless-webrtc.html in Firefox.
 Blog post with more details:
 http://blog.printf.net/articles/2013/05/17/webrtc-without-a-signaling-server
 
+Demo link:
+http://cjb.github.io/serverless-webrtc/serverless-webrtc.html
+
 -- Chris Ball <chris@printf.net>
