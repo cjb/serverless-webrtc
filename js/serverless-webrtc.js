@@ -26,6 +26,7 @@ $('#createOrJoin').modal('show');
 
 $('#createBtn').click(function() {
     $('#showLocalOffer').modal('show');
+    addition();
 });
 
 $('#joinBtn').click(function() {
@@ -73,16 +74,16 @@ function fileProgress(file) {
 
 function sendFile(data) {
     if (data.size) {
-	FileSender.send({
-	    file: data,
-	    onFileSent: fileSent,
-	    onFileProgress: fileProgress,
-	});
+    FileSender.send({
+        file: data,
+        onFileSent: fileSent,
+        onFileProgress: fileProgress,
+    });
     }
 }
 function sendMessage() {
     if ($('#messageTextBox').val()) {
-	var channel = new RTCMultiSession();
+    var channel = new RTCMultiSession();
         writeToChatLog($('#messageTextBox').val(), "text-success");
         channel.send({message: $('#messageTextBox').val()});
         $('#messageTextBox').val("");
@@ -100,6 +101,11 @@ function setupDC1() {
         dc1 = pc1.createDataChannel('test', {reliable:true});
         activedc = dc1;
         console.log("Created datachannel (pc1)");
+        dc1.onopen = function (e) {
+            console.log('data channel connect');
+            $('#waitForConnection').modal('hide');
+            $('#waitForConnection').remove();
+        }
         dc1.onmessage = function (e) {
             console.log("Got message (pc1)", e.data);
             if (e.data.size) {
@@ -120,25 +126,30 @@ function setupDC1() {
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
 
-getUserMedia({'audio':true, fake:true}, function (stream) {
-    console.log("Got local audio", stream);
-    pc1.addStream(stream);
+
+function addition() {
+    // getUserMedia({'audio':true, fake:true}, function (stream) {
+    //     console.log("Got local audio", stream);
+    //     pc1.addStream(stream);
+    //     setupDC1();
+    //     pc1.createOffer(function (offerDesc) {  
+    //         pc1.setLocalDescription(offerDesc);
+    //         console.log("Created local offer", offerDesc);
+    //         $('#localOffer').html(JSON.stringify(offerDesc));
+    //     }, function () { console.warn("Couldn't create offer"); });
+    // }, function () { console.warn("No audio"); });
     setupDC1();
-    pc1.createOffer(function (offerDesc) {
-        console.log("Created local offer", offerDesc);
-        pc1.setLocalDescription(offerDesc);
-        $('#localOffer').html(JSON.stringify(offerDesc));
-    }, function () { console.warn("Couldn't create offer"); });
-}, function () { console.warn("No audio"); });
+    pc1.createOffer(function (desc) {
+        pc1.setLocalDescription(desc, function () {});
+        console.log("created local offer", desc);
+    }, function () {console.warn("Couldn't create offer");});
+}
+
 
 pc1.onicecandidate = function (e) {
     console.log("ICE candidate (pc1)", e);
-    if (e.candidate) {
-        //handleCandidateFromPC1(e.candidate)
-        if (!pc1icedone) {
-            document.localICECandidateForm.localICECandidate.value = JSON.stringify(e.candidate);
-            pc1icedone = true;
-        }
+    if (e.candidate == null) {
+        $('#localOffer').html(JSON.stringify(pc1.localDescription));
     }
 };
 
@@ -180,6 +191,10 @@ pc2.ondatachannel = function (e) {
     console.log("Received datachannel (pc2)", arguments);
     dc2 = datachannel;
     activedc = dc2;
+    dc2.onopen = function (e) {
+        console.log('data channel connect');
+        $('#waitForConnection').remove();
+    }
     dc2.onmessage = function (e) {
         console.log("Got message (pc2)", e.data);
         if (e.data.size) {
@@ -204,15 +219,14 @@ function handleOfferFromPC1(offerDesc) {
     pc2.createAnswer(function (answerDesc) {
         writeToChatLog("Created local answer", "text-success");
         console.log("Created local answer: ", answerDesc);
-        pc2.setLocalDescription(answerDesc);
-        $('#localAnswer').html(JSON.stringify(answerDesc));
+        pc2.setLocalDescription(answerDesc); 
     }, function () { console.warn("No create answer"); });
 }
 
 pc2.onicecandidate = function (e) {
     console.log("ICE candidate (pc2)", e);
-    if (e.candidate)
-        handleCandidateFromPC2(e.candidate);
+    if (e.candidate == null)
+       $('#localAnswer').html(JSON.stringify(pc2.localDescription)); 
 };
 
 function handleCandidateFromPC1(iceCandidate) {
