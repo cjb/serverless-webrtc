@@ -26,7 +26,7 @@ $('#createOrJoin').modal('show');
 
 $('#createBtn').click(function() {
     $('#showLocalOffer').modal('show');
-    addition();
+    createLocalOffer();
 });
 
 $('#joinBtn').click(function() {
@@ -74,16 +74,17 @@ function fileProgress(file) {
 
 function sendFile(data) {
     if (data.size) {
-    FileSender.send({
-        file: data,
-        onFileSent: fileSent,
-        onFileProgress: fileProgress,
-    });
+        FileSender.send({
+          file: data,
+          onFileSent: fileSent,
+          onFileProgress: fileProgress,
+        });
     }
 }
+
 function sendMessage() {
     if ($('#messageTextBox').val()) {
-    var channel = new RTCMultiSession();
+        var channel = new RTCMultiSession();
         writeToChatLog($('#messageTextBox').val(), "text-success");
         channel.send({message: $('#messageTextBox').val()});
         $('#messageTextBox').val("");
@@ -126,25 +127,13 @@ function setupDC1() {
     } catch (e) { console.warn("No data channel (pc1)", e); }
 }
 
-
-function addition() {
-    // getUserMedia({'audio':true, fake:true}, function (stream) {
-    //     console.log("Got local audio", stream);
-    //     pc1.addStream(stream);
-    //     setupDC1();
-    //     pc1.createOffer(function (offerDesc) {  
-    //         pc1.setLocalDescription(offerDesc);
-    //         console.log("Created local offer", offerDesc);
-    //         $('#localOffer').html(JSON.stringify(offerDesc));
-    //     }, function () { console.warn("Couldn't create offer"); });
-    // }, function () { console.warn("No audio"); });
+function createLocalOffer() {
     setupDC1();
     pc1.createOffer(function (desc) {
         pc1.setLocalDescription(desc, function () {});
         console.log("created local offer", desc);
     }, function () {console.warn("Couldn't create offer");});
 }
-
 
 pc1.onicecandidate = function (e) {
     console.log("ICE candidate (pc1)", e);
@@ -219,14 +208,14 @@ function handleOfferFromPC1(offerDesc) {
     pc2.createAnswer(function (answerDesc) {
         writeToChatLog("Created local answer", "text-success");
         console.log("Created local answer: ", answerDesc);
-        pc2.setLocalDescription(answerDesc); 
+        pc2.setLocalDescription(answerDesc);
     }, function () { console.warn("No create answer"); });
 }
 
 pc2.onicecandidate = function (e) {
     console.log("ICE candidate (pc2)", e);
     if (e.candidate == null)
-       $('#localAnswer').html(JSON.stringify(pc2.localDescription)); 
+       $('#localAnswer').html(JSON.stringify(pc2.localDescription));
 };
 
 function handleCandidateFromPC1(iceCandidate) {
