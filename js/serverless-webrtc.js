@@ -6,7 +6,7 @@
 */
 
 var cfg = {"iceServers":[{"url":"stun:23.21.150.121"}]},
-    con = { 'optional': [{'DtlsSrtpKeyAgreement': true}, {'RtpDataChannels': true }] };
+    con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
 
 /* THIS IS ALICE, THE CALLER/SENDER */
 
@@ -113,6 +113,13 @@ function setupDC1() {
                 fileReceiver1.receive(e.data, {});
             }
             else {
+                if (e.data.charCodeAt(0) == 2) {
+                   // The first message we get from Firefox (but not Chrome)
+                   // is literal ASCII 2 and I don't understand why -- if we
+                   // leave it in, JSON.parse() will barf.
+                   return;
+                }
+                console.log(e);
                 var data = JSON.parse(e.data);
                 if (data.type === 'file') {
                     fileReceiver1.receive(e.data, {});
@@ -155,6 +162,22 @@ function handleOnconnection() {
 }
 
 pc1.onconnection = handleOnconnection;
+
+function onsignalingstatechange(state) {
+    console.info('signaling state change:', state);
+}
+
+function oniceconnectionstatechange(state) {
+    console.info('ice connection state change:', state);
+}
+
+function onicegatheringstatechange(state) {
+    console.info('ice gathering state change:', state);
+}
+
+pc1.onsignalingstatechange = onsignalingstatechange;
+pc1.oniceconnectionstatechange = oniceconnectionstatechange;
+pc1.onicegatheringstatechange = onicegatheringstatechange;
 
 function handleAnswerFromPC2(answerDesc) {
     console.log("Received remote answer: ", answerDesc);
@@ -217,6 +240,10 @@ pc2.onicecandidate = function (e) {
     if (e.candidate == null)
        $('#localAnswer').html(JSON.stringify(pc2.localDescription));
 };
+
+pc2.onsignalingstatechange = onsignalingstatechange;
+pc2.oniceconnectionstatechange = oniceconnectionstatechange;
+pc2.onicegatheringstatechange = onicegatheringstatechange;
 
 function handleCandidateFromPC1(iceCandidate) {
     pc2.addIceCandidate(iceCandidate);
