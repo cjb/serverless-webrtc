@@ -24,7 +24,7 @@ in any combination (tested with Chrome 35 and Firefox 29).
 If you want to create a session instead of joining one under node:
 
 ```
- λ node_modules/serverless-webrtc/bin/serverless-webrtc --create
+ λ node_modules/serverless-webrtc/serverless-webrtc.js --create
 ```
 
 ### For browsers:
