@@ -1,6 +1,6 @@
 {
   "name": "serverless-webrtc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A terminal text chat client for webrtc datachannels between node and browsers.",
   "author": "Chris Ball <chris@printf.net> (http://printf.net/)",
   "license": "MIT",
