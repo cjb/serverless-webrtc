@@ -20,10 +20,10 @@ in any combination (tested with Chrome 35 and Firefox 29).
 
 ```
  λ npm install serverless-webrtc
- λ node_modules/serverless-webrtc/bin/serverless-webrtc
+ λ node_modules/serverless-webrtc/serverless-webrtc.js
 ```
 
-If you want to create a session instead of joining one under node:
+Under Node, if you want to create a session instead of joining one:
 
 ```
  λ node_modules/serverless-webrtc/serverless-webrtc.js --create
