@@ -42,8 +42,9 @@ Serving HTTP on 0.0.0.0 port 8001 ...
 
 and then browse to [http://localhost:8001/](http://localhost:8001/).
 
-Blog post with more details:
+Blog posts with more details:
 http://blog.printf.net/articles/2013/05/17/webrtc-without-a-signaling-server
+http://blog.printf.net/articles/2014/07/01/serverless-webrtc-continued/
 
 Browser demo link:
 http://cjb.github.io/serverless-webrtc/serverless-webrtc.html
