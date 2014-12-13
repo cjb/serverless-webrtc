@@ -205,6 +205,7 @@ pc2.ondatachannel = function (e) {
     activedc = dc2;
     dc2.onopen = function (e) {
         console.log('data channel connect');
+        $('#waitForConnection').modal('hide');
         $('#waitForConnection').remove();
     }
     dc2.onmessage = function (e) {
