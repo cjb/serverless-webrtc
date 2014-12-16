@@ -137,7 +137,7 @@ function setupDC1() {
 function createLocalOffer() {
     setupDC1();
     pc1.createOffer(function (desc) {
-        pc1.setLocalDescription(desc, function () {});
+        pc1.setLocalDescription(desc, function () {}, function () {});
         console.log("created local offer", desc);
     }, function () {console.warn("Couldn't create offer");});
 }
