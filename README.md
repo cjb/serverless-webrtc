@@ -74,3 +74,5 @@ Individual connections can also be closed, or queried for their Round Trip Durat
 RTD is queried by sending an ''echo request'' package, which automatically triggers an ''echo response'' from the other user.
 
 One could optionally use different nicknames for different connections.
+
+At the moment, sending a file would transmit it only to the last connection made
