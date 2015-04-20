@@ -4,7 +4,7 @@ var attachMediaStream = null;
 var reattachMediaStream = null;
 var webrtcDetectedBrowser = null;
 
-if (navigator.mozGetUserMedia) {
+if (window.navigator.mozGetUserMedia) {
   console.log("This appears to be Firefox");
 
   webrtcDetectedBrowser = "firefox";
@@ -20,7 +20,7 @@ if (navigator.mozGetUserMedia) {
 
   // Get UserMedia (only difference is the prefix).
   // Code from Adam Barth.
-  getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+  getUserMedia = window.navigator.mozGetUserMedia.bind(navigator);
 
   // Attach a media stream to an element.
   attachMediaStream = function(element, stream) {
