@@ -184,12 +184,14 @@ pc1.onicecandidate = function (e) {
   }
 }
 
-pc1.onaddstream = function (e) {
-  console.log('in pc1.onaddstream', e.stream)
+function handleOnaddstream (e) {
+  console.log('Got remote stream', e.stream)
   var el = document.getElementById('remoteVideo')
   el.autoplay = true
   attachMediaStream(el, e.stream)
 }
+
+pc1.onaddstream = handleOnaddstream
 
 function handleOnconnection () {
   console.log('Datachannel connected')
@@ -279,8 +281,9 @@ function handleOfferFromPC1 (offerDesc) {
 
 pc2.onicecandidate = function (e) {
   console.log('ICE candidate (pc2)', e)
-  if (e.candidate == null)
+  if (e.candidate == null) {
     $('#localAnswer').html(JSON.stringify(pc2.localDescription))
+  }
 }
 
 pc2.onsignalingstatechange = onsignalingstatechange
@@ -291,13 +294,7 @@ function handleCandidateFromPC1 (iceCandidate) {
   pc2.addIceCandidate(iceCandidate)
 }
 
-pc2.onaddstream = function (e) {
-  console.log('Got remote stream', e.stream)
-  var el = document.getElementById('remoteVideo')
-  el.autoplay = true
-  attachMediaStream(el, e.stream)
-}
-
+pc2.onaddstream = handleOnaddstream
 pc2.onconnection = handleOnconnection
 
 function getTimestamp () {
