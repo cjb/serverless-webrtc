@@ -185,7 +185,6 @@ function createLocalOffer () {
     pc1.createOffer(function (desc) {
       pc1.setLocalDescription(desc, function () {}, function () {})
       console.log('created local offer', desc)
-      writeOfferToKBFS(desc)
     },
     function () { console.warn("Couldn't create offer") },
     sdpConstraints)
@@ -212,12 +211,14 @@ function readAnswerFromKBFS (answerFile, interval) {
   })
 }
 
-function writeOfferToKBFS (desc) {
+function writeOfferToKBFS () {
   console.log(us)
   console.log(them)
   var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
   var offerFile = dir + '/' + us + '-offer'
-  fs.writeFile(offerFile, JSON.stringify(desc), function (err) {
+  console.log('writing offer')
+  console.log(pc1.localDescription)
+  fs.writeFile(offerFile, JSON.stringify(pc1.localDescription), function (err) {
     if (err) {
       throw err
     }
@@ -245,10 +246,12 @@ function readOfferFromKBFS (offerFile, interval) {
   })
 }
 
-function writeAnswerToKBFS (desc) {
+function writeAnswerToKBFS () {
   var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
   var answerFile = dir + '/' + us + '-answer'
-  fs.writeFile(answerFile, desc, function (err) {
+  console.log('writing answer')
+  console.log(pc2.localDescription)
+  fs.writeFile(answerFile, JSON.stringify(pc2.localDescription), function (err) {
     if (err) {
       throw err
     }
@@ -261,6 +264,7 @@ pc1.onicecandidate = function (e) {
   console.log('ICE candidate (pc1)', e)
   if (e.candidate == null) {
     $('#localOffer').html(JSON.stringify(pc1.localDescription))
+    writeOfferToKBFS()
   }
 }
 
@@ -354,7 +358,6 @@ function handleOfferFromPC1 (offerDesc) {
     writeToChatLog('Created local answer', 'text-success')
     console.log('Created local answer: ', answerDesc)
     pc2.setLocalDescription(answerDesc)
-    writeAnswerToKBFS(JSON.stringify(answerDesc))
   },
   function () { console.warn("Couldn't create offer") },
   sdpConstraints)
@@ -364,6 +367,7 @@ pc2.onicecandidate = function (e) {
   console.log('ICE candidate (pc2)', e)
   if (e.candidate == null) {
     $('#localAnswer').html(JSON.stringify(pc2.localDescription))
+    writeAnswerToKBFS()
   }
 }
 
