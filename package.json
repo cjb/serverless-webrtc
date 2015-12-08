@@ -6,7 +6,6 @@
   "license": "MIT",
   "main": "serverless-webrtc.js",
   "dependencies": {
-    "wrtc": "~0.0.29",
     "ansi": "0.3.0"
   },
   "repository": {
@@ -20,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/cjb/serverless-webrtc/issues"
   },
-  "bin": "./serverless-webrtc.js",
+  "bin": "./electron.js",
   "preferGlobal": true,
   "homepage": "https://github.com/cjb/serverless-webrtc"
 }

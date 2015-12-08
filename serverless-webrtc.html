@@ -35,15 +35,16 @@
 
 <div class="modal" id="showLocalOffer" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
-    <h3 id="myModalLabel">Send your local offer to someone else</h3>
+    <h3 id="myModalLabel">Who do you want to call?</h3>
   </div>
   <div class="modal-body">
-    Here's your "offer" -- it tells someone else how to connect to you.  Send the whole thing to them, for example in an instant message or e-mail.
+    You can enter a Keybase username (e.g. max) or a social media identity (e.g. maxtaco@twitter)
   <br/>
-  <textarea class="input-large" id="localOffer" name="localOffer" rows="10" cols="100"></textarea>
+  <br/>
+  <input type="text" id="localOffer" name="localOffer"></input>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" id="offerSentBtn" data-dismiss="modal" aria-hidden="true">Okay, I sent it.</button>
+    <button class="btn btn-primary" id="offerSentBtn" data-dismiss="modal" aria-hidden="true">Send an invitation</button>
   </div>
 </div>
 
@@ -101,13 +102,26 @@
   </div>
 </div>
 
-<div class="modal" id="createOrJoin" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal" id="createOrJoin" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
   <div class="modal-header">
     <h3 id="myModalLabel">Create or join a room?</h3>
   </div>
   <div class="modal-footer">
     <button class="btn" id="joinBtn" data-dismiss="modal" aria-hidden="true">Join</button>
     <button class="btn btn-primary" id="createBtn" data-dismiss="modal" aria-hidden="true">Create</button>
+  </div>
+</div>
+
+
+<div class="modal" id="getKeybaseUsername" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" hidden>
+  <div class="modal-header">
+    <h3 id="myModalLabel">What is your Keybase username?</h3>
+  </div>
+  <div class="modal-body">
+    <input type="text" id="keybaseUsername" name="keybaseUsername"></input>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" id="usernameRecdBtn" data-dismiss="modal" aria-hidden="true">Here it is.</button>
   </div>
 </div>
 

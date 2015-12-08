@@ -16,7 +16,8 @@ var pc1 = new RTCPeerConnection(cfg, con),
 // Since the same JS file contains code for both sides of the connection,
 // activedc tracks which of the two possible datachannel variables we're using.
 var activedc
-
+var us
+var them
 var pc1icedone = false
 
 var sdpConstraints = {
@@ -30,7 +31,13 @@ var sdpConstraints = {
 $('#showLocalOffer').modal('hide')
 $('#getRemoteAnswer').modal('hide')
 $('#waitForConnection').modal('hide')
-$('#createOrJoin').modal('show')
+$('#createOrJoin').modal('hide')
+$('#getKeybaseUsername').modal('show')
+
+$('#usernameRecdBtn').click(function () {
+  us = $('#keybaseUsername').val()
+  $('#createOrJoin').modal('show')
+})
 
 $('#createBtn').click(function () {
   $('#showLocalOffer').modal('show')
@@ -54,7 +61,9 @@ $('#joinBtn').click(function () {
 })
 
 $('#offerSentBtn').click(function () {
-  $('#getRemoteAnswer').modal('show')
+  them = $('#localOffer').val()
+  writeToChatLog(us + ' is calling ' + them, 'text-info')
+  $('#waitForConnection').modal('show')
 })
 
 $('#offerRecdBtn').click(function () {
@@ -170,11 +179,16 @@ function createLocalOffer () {
       pc1.setLocalDescription(desc, function () {}, function () {})
       console.log('created local offer', desc)
     },
+    writeOfferToKBFS(desc)
     function () { console.warn("Couldn't create offer") },
     sdpConstraints)
   }, function (error) {
     console.log('Error adding stream to pc1: ' + error)
   })
+}
+
+function writeOfferToKBFS (desc) {
+  // FIXME
 }
 
 pc1.onicecandidate = function (e) {
