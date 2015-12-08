@@ -19,6 +19,14 @@ var activedc
 
 var pc1icedone = false
 
+var sdpConstraints = {
+  optional: [],
+  mandatory: {
+    OfferToReceiveAudio: true,
+    OfferToReceiveVideo: true
+  }
+}
+
 $('#showLocalOffer').modal('hide')
 $('#getRemoteAnswer').modal('hide')
 $('#waitForConnection').modal('hide')
@@ -30,6 +38,18 @@ $('#createBtn').click(function () {
 })
 
 $('#joinBtn').click(function () {
+  navigator.getUserMedia = navigator.getUserMedia ||
+                           navigator.webkitGetUserMedia ||
+                           navigator.mozGetUserMedia ||
+                           navigator.msGetUserMedia
+  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+    var video = document.getElementById('localVideo')
+    video.src = window.URL.createObjectURL(stream)
+    video.play()
+    pc2.addStream(stream)
+  }, function (error) {
+    console.log('Error adding stream to pc2: ' + error)
+  })
   $('#getRemoteOffer').modal('show')
 })
 
@@ -133,11 +153,28 @@ function setupDC1 () {
 }
 
 function createLocalOffer () {
-  setupDC1()
-  pc1.createOffer(function (desc) {
-    pc1.setLocalDescription(desc, function () {}, function () {})
-    console.log('created local offer', desc)
-  }, function () {console.warn("Couldn't create offer");})
+  console.log('video1')
+  navigator.getUserMedia = navigator.getUserMedia ||
+                           navigator.webkitGetUserMedia ||
+                           navigator.mozGetUserMedia ||
+                           navigator.msGetUserMedia
+  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+    var video = document.getElementById('localVideo')
+    video.src = window.URL.createObjectURL(stream)
+    video.play()
+    pc1.addStream(stream)
+    console.log(stream)
+    console.log('adding stream to pc1')
+    setupDC1()
+    pc1.createOffer(function (desc) {
+      pc1.setLocalDescription(desc, function () {}, function () {})
+      console.log('created local offer', desc)
+    },
+    function () { console.warn("Couldn't create offer") },
+    sdpConstraints)
+  }, function (error) {
+    console.log('Error adding stream to pc1: ' + error)
+  })
 }
 
 pc1.onicecandidate = function (e) {
@@ -145,6 +182,13 @@ pc1.onicecandidate = function (e) {
   if (e.candidate == null) {
     $('#localOffer').html(JSON.stringify(pc1.localDescription))
   }
+}
+
+pc1.onaddstream = function (e) {
+  console.log('in pc1.onaddstream', e.stream)
+  var el = document.getElementById('remoteVideo')
+  el.autoplay = true
+  attachMediaStream(el, e.stream)
 }
 
 function handleOnconnection () {
@@ -228,7 +272,9 @@ function handleOfferFromPC1 (offerDesc) {
     writeToChatLog('Created local answer', 'text-success')
     console.log('Created local answer: ', answerDesc)
     pc2.setLocalDescription(answerDesc)
-  }, function () { console.warn('No create answer'); })
+  },
+  function () { console.warn("Couldn't create offer") },
+  sdpConstraints)
 }
 
 pc2.onicecandidate = function (e) {
@@ -246,8 +292,8 @@ function handleCandidateFromPC1 (iceCandidate) {
 }
 
 pc2.onaddstream = function (e) {
-  console.log('Got remote stream', e)
-  var el = new Audio()
+  console.log('Got remote stream', e.stream)
+  var el = document.getElementById('remoteVideo')
   el.autoplay = true
   attachMediaStream(el, e.stream)
 }
