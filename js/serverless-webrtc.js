@@ -5,6 +5,8 @@
     https://webrtc-demos.appspot.com/html/pc1.html
 */
 
+var fs = require('fs')
+
 var cfg = {'iceServers': [{'url': 'stun:23.21.150.121'}]},
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] }
 
@@ -36,13 +38,14 @@ $('#getKeybaseUsername').modal('show')
 
 $('#usernameRecdBtn').click(function () {
   us = $('#keybaseUsername').val()
-  $('#createOrJoin').modal('show')
+  $('#showLocalOffer').modal('show')
 })
 
 $('#createBtn').click(function () {
-  $('#showLocalOffer').modal('show')
   createLocalOffer()
+  $('#waitForConnection').modal('show')
 })
+
 
 $('#joinBtn').click(function () {
   navigator.getUserMedia = navigator.getUserMedia ||
@@ -54,16 +57,20 @@ $('#joinBtn').click(function () {
     video.src = window.URL.createObjectURL(stream)
     video.play()
     pc2.addStream(stream)
+    var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
+    var offerFile = dir + '/' + them + '-offer'
+    var interval = setInterval(function () {
+      readOfferFromKBFS(offerFile, interval)
+    }, 1000, offerFile)
   }, function (error) {
     console.log('Error adding stream to pc2: ' + error)
   })
-  $('#getRemoteOffer').modal('show')
 })
 
 $('#offerSentBtn').click(function () {
   them = $('#localOffer').val()
   writeToChatLog(us + ' is calling ' + them, 'text-info')
-  $('#waitForConnection').modal('show')
+  $('#createOrJoin').modal('show')
 })
 
 $('#offerRecdBtn').click(function () {
@@ -178,8 +185,8 @@ function createLocalOffer () {
     pc1.createOffer(function (desc) {
       pc1.setLocalDescription(desc, function () {}, function () {})
       console.log('created local offer', desc)
+      writeOfferToKBFS(desc)
     },
-    writeOfferToKBFS(desc)
     function () { console.warn("Couldn't create offer") },
     sdpConstraints)
   }, function (error) {
@@ -187,8 +194,67 @@ function createLocalOffer () {
   })
 }
 
+function readAnswerFromKBFS (answerFile, interval) {
+  console.log('in readAnswerFromKBFS')
+  console.log(answerFile)
+  fs.readFile(answerFile, {encoding: 'utf8'}, function (err, data) {
+    console.log('in readFile cb')
+    if (err == null) {
+      console.log('no error')
+      clearInterval(interval)
+      console.log(data)
+      console.log(JSON.parse(data))
+      var answerDesc = new RTCSessionDescription(JSON.parse(data))
+      handleAnswerFromPC2(answerDesc)
+    } else {
+      console.log("couldn't open " + answerFile)
+    }
+  })
+}
+
 function writeOfferToKBFS (desc) {
-  // FIXME
+  console.log(us)
+  console.log(them)
+  var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
+  var offerFile = dir + '/' + us + '-offer'
+  fs.writeFile(offerFile, JSON.stringify(desc), function (err) {
+    if (err) {
+      throw err
+    }
+    console.log('Saved offer')
+    var answerFile = dir + '/' + them + '-answer'
+    var interval = setInterval(function () {
+      readAnswerFromKBFS(answerFile, interval)
+    }, 1000, answerFile)
+  })
+}
+
+function readOfferFromKBFS (offerFile, interval) {
+  console.log('in readOfferFromKBFS')
+  fs.readFile(offerFile, function (err, data) {
+    console.log('in readFile cb')
+    if (err == null) {
+      console.log('no error')
+      clearInterval(interval)
+      var offerDesc = new RTCSessionDescription(JSON.parse(data))
+      handleOfferFromPC1(offerDesc)
+      $('#waitForConnection').modal('show')
+    } else {
+      console.log("couldn't open " + offerFile)
+    }
+  })
+}
+
+function writeAnswerToKBFS (desc) {
+  var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
+  var answerFile = dir + '/' + us + '-answer'
+  fs.writeFile(answerFile, desc, function (err) {
+    if (err) {
+      throw err
+    }
+    console.log('Saved answer')
+    $('#waitForConnection').modal('show')
+  })
 }
 
 pc1.onicecandidate = function (e) {
@@ -288,6 +354,7 @@ function handleOfferFromPC1 (offerDesc) {
     writeToChatLog('Created local answer', 'text-success')
     console.log('Created local answer: ', answerDesc)
     pc2.setLocalDescription(answerDesc)
+    writeAnswerToKBFS(JSON.stringify(answerDesc))
   },
   function () { console.warn("Couldn't create offer") },
   sdpConstraints)
@@ -310,6 +377,8 @@ function handleCandidateFromPC1 (iceCandidate) {
 
 pc2.onaddstream = handleOnaddstream
 pc2.onconnection = handleOnconnection
+
+// Util functions.
 
 function getTimestamp () {
   var totalSec = new Date().getTime() / 1000
