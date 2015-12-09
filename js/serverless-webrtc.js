@@ -58,7 +58,7 @@ $('#joinBtn').click(function () {
     video.play()
     pc2.addStream(stream)
     var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
-    var offerFile = dir + '/' + them + '-offer'
+    var offerFile = dir + '/' + 'offer'
     var interval = setInterval(function () {
       readOfferFromKBFS(offerFile, interval)
     }, 1000, offerFile)
@@ -215,7 +215,7 @@ function writeOfferToKBFS () {
   console.log(us)
   console.log(them)
   var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
-  var offerFile = dir + '/' + us + '-offer'
+  var offerFile = dir + '/' + 'offer'
   console.log('writing offer')
   console.log(pc1.localDescription)
   fs.writeFile(offerFile, JSON.stringify(pc1.localDescription), function (err) {
@@ -223,7 +223,7 @@ function writeOfferToKBFS () {
       throw err
     }
     console.log('Saved offer')
-    var answerFile = dir + '/' + them + '-answer'
+    var answerFile = dir + '/' + 'answer'
     var interval = setInterval(function () {
       readAnswerFromKBFS(answerFile, interval)
     }, 1000, answerFile)
@@ -237,6 +237,7 @@ function readOfferFromKBFS (offerFile, interval) {
     if (err == null) {
       console.log('no error')
       clearInterval(interval)
+      console.log(data)
       var offerDesc = new RTCSessionDescription(JSON.parse(data))
       handleOfferFromPC1(offerDesc)
       $('#waitForConnection').modal('show')
@@ -248,7 +249,7 @@ function readOfferFromKBFS (offerFile, interval) {
 
 function writeAnswerToKBFS () {
   var dir = process.env.HOME + '/Keybase/private/' + us + ',' + them
-  var answerFile = dir + '/' + us + '-answer'
+  var answerFile = dir + '/' + 'answer'
   console.log('writing answer')
   console.log(pc2.localDescription)
   fs.writeFile(answerFile, JSON.stringify(pc2.localDescription), function (err) {

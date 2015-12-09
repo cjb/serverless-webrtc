@@ -4,7 +4,7 @@
   "description": "A terminal text chat client for webrtc datachannels between node and browsers.",
   "author": "Chris Ball <chris@printf.net> (http://printf.net/)",
   "license": "MIT",
-  "main": "electron.js",
+  "main": "index.js",
   "dependencies": {
     "ansi": "0.3.0"
   },
@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/cjb/serverless-webrtc/issues"
   },
-  "bin": "./electron.js",
+  "bin": "index.js",
   "preferGlobal": true,
   "homepage": "https://github.com/cjb/serverless-webrtc"
 }
