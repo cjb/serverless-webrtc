@@ -50,6 +50,6 @@ http://blog.printf.net/articles/2014/07/01/serverless-webrtc-continued
 
 #### Browser demo link:
 
-http://cjb.github.io/serverless-webrtc/serverless-webrtc.html
+https://cjb.github.io/serverless-webrtc/serverless-webrtc.html
 
 -- Chris Ball <chris@printf.net> (http://printf.net/)
