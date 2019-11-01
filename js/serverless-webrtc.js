@@ -190,13 +190,13 @@ pc1.onicecandidate = function (e) {
 }
 
 function handleOnaddstream (e) {
-  console.log('Got remote stream', e.stream)
+  console.log('Got remote stream', e.streams[0])
   var el = document.getElementById('remoteVideo')
   el.autoplay = true
-  attachMediaStream(el, e.stream)
+  attachMediaStream(el, e.streams[0])
 }
 
-pc1.onaddstream = handleOnaddstream
+pc1.ontrack = handleOnaddstream
 
 function handleOnconnection () {
   console.log('Datachannel connected')
@@ -299,7 +299,7 @@ function handleCandidateFromPC1 (iceCandidate) {
   pc2.addIceCandidate(iceCandidate)
 }
 
-pc2.onaddstream = handleOnaddstream
+pc2.ontrack = handleOnaddstream
 pc2.onconnection = handleOnconnection
 
 function getTimestamp () {
