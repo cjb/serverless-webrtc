@@ -196,7 +196,7 @@ function handleOnaddstream (e) {
   attachMediaStream(el, e.stream)
 }
 
-pc1.ontrack = handleOnaddstream
+pc1.onaddstream = handleOnaddstream
 
 function handleOnconnection () {
   console.log('Datachannel connected')
@@ -299,7 +299,7 @@ function handleCandidateFromPC1 (iceCandidate) {
   pc2.addIceCandidate(iceCandidate)
 }
 
-pc2.ontrack = handleOnaddstream
+pc2.onaddstream = handleOnaddstream
 pc2.onconnection = handleOnconnection
 
 function getTimestamp () {
