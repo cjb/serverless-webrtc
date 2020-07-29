@@ -156,7 +156,7 @@ function createLocalOffer () {
   console.log('video1')
   navigator.getUserMedia = navigator.getUserMedia ||
                            navigator.webkitGetUserMedia ||
-                           navigator.mozGetUserMedia ||
+                           navigator.mediaDevices.getUserMedia ||
                            navigator.msGetUserMedia
   navigator.getUserMedia({video: true, audio: true}, function (stream) {
     var video = document.getElementById('localVideo')
