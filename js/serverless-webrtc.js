@@ -33,6 +33,7 @@ $('#waitForConnection').modal('hide')
 $('#createOrJoin').modal('show')
 
 $('#createBtn').click(function () {
+  $('#createOrJoin').modal('hide')
   $('#showLocalOffer').modal('show')
   createLocalOffer()
 })
@@ -42,7 +43,7 @@ $('#joinBtn').click(function () {
                            navigator.webkitGetUserMedia ||
                            navigator.mozGetUserMedia ||
                            navigator.msGetUserMedia
-  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+  navigator.getUserMedia && navigator.getUserMedia({video: true, audio: true}, function (stream) {
     var video = document.getElementById('localVideo')
     video.src = window.URL.createObjectURL(stream)
     video.play()
@@ -50,6 +51,7 @@ $('#joinBtn').click(function () {
   }, function (error) {
     console.log('Error adding stream to pc2: ' + error)
   })
+  $('#createOrJoin').modal('hide')
   $('#getRemoteOffer').modal('show')
 })
 
@@ -156,25 +158,33 @@ function createLocalOffer () {
   console.log('video1')
   navigator.getUserMedia = navigator.getUserMedia ||
                            navigator.webkitGetUserMedia ||
-                           navigator.mediaDevices.getUserMedia ||
+                           (navigator.mediaDevices&&navigator.mediaDevices.getUserMedia) ||
                            navigator.msGetUserMedia
-  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+  navigator.getUserMedia && navigator.getUserMedia({video: true, audio: true}, function (stream) {
     var video = document.getElementById('localVideo')
     video.src = window.URL.createObjectURL(stream)
     video.play()
     pc1.addStream(stream)
     console.log(stream)
     console.log('adding stream to pc1')
-    setupDC1()
-    pc1.createOffer(function (desc) {
+//     pc1.createOffer(function (desc) {
+//       pc1.setLocalDescription(desc, function () {}, function () {})
+//       console.log('created local offer', desc)
+//     },
+//     function () { console.warn("Couldn't create offer") },
+//     sdpConstraints)
+  }, function (error) {
+    console.log('Error adding stream to pc1: ' + error)
+  })
+  
+
+  setupDC1()
+  pc1.createOffer(function (desc) {
       pc1.setLocalDescription(desc, function () {}, function () {})
       console.log('created local offer', desc)
     },
     function () { console.warn("Couldn't create offer") },
     sdpConstraints)
-  }, function (error) {
-    console.log('Error adding stream to pc1: ' + error)
-  })
 }
 
 pc1.onicecandidate = function (e) {

@@ -43,7 +43,7 @@ if (navigator.mozGetUserMedia) {
   MediaStream.prototype.getAudioTracks = function () {
     return []
   }
-} else if (navigator.webkitGetUserMedia) {
+} else {//} if (navigator.webkitGetUserMedia || navigator.webkitGetUserMedia) {
   console.log('This appears to be Chrome')
 
   webrtcDetectedBrowser = 'chrome'
@@ -53,7 +53,9 @@ if (navigator.mozGetUserMedia) {
 
   // Get UserMedia (only difference is the prefix).
   // Code from Adam Barth.
-  getUserMedia = navigator.webkitGetUserMedia.bind(navigator)
+  //getUserMedia = navigator.webkitGetUserMedia.bind(navigator)
+  if(navigator.mediaDevices)//Non HTTPS booo...
+      getUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
 
   // Attach a media stream to an element.
   attachMediaStream = function (element, stream) {
@@ -84,6 +86,6 @@ if (navigator.mozGetUserMedia) {
       return this.remoteStreams
     }
   }
-} else {
-  console.log('Browser does not appear to be WebRTC-capable')
-}
+} //else {
+  //console.log('Browser does not appear to be WebRTC-capable')
+//}
