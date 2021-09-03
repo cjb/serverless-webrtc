@@ -46,6 +46,7 @@ $('#waitForConnection').modal('hide')
 $('#createOrJoin').modal('show')
 
 $('#createBtn').click(function () {
+  $('#createOrJoin').modal('hide')
   $('#showLocalOffer').modal('show')
   createLocalOffer()
 })
@@ -59,10 +60,12 @@ $('#joinBtn').click(function () {
 }).catch(function (error) {
     console.log('Error adding stream to pc2: ' + error)
 });
+  $('#createOrJoin').modal('hide')
   $('#getRemoteOffer').modal('show')
 })
 
 $('#offerSentBtn').click(function () {
+  $('#showLocalOffer').modal('hide')
   $('#getRemoteAnswer').modal('show')
 })
 
@@ -72,10 +75,12 @@ $('#offerRecdBtn').click(function () {
   console.log('Received remote offer', offerDesc)
   writeToChatLog('Received remote offer', 'text-success')
   handleOfferFromPC1(offerDesc)
+  $('#getRemoteOffer').modal('hide')
   $('#showLocalAnswer').modal('show')
 })
 
 $('#answerSentBtn').click(function () {
+  $('#showLocalAnswer').modal('hide')
   $('#waitForConnection').modal('show')
 })
 
@@ -83,6 +88,7 @@ $('#answerRecdBtn').click(function () {
   var answer = $('#remoteAnswer').val()
   var answerDesc = new RTCSessionDescription(JSON.parse(answer))
   handleAnswerFromPC2(answerDesc)
+  $('#getRemoteAnswer').modal('hide')
   $('#waitForConnection').modal('show')
 })
 
