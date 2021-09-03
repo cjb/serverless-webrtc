@@ -5,7 +5,20 @@
     https://webrtc-demos.appspot.com/html/pc1.html
 */
 
-var cfg = {'iceServers': [{'url': 'stun:23.21.150.121'}]},
+// Attach a media stream to an element.
+attachMediaStream = function (element, stream) {
+  console.log('Attaching media stream')
+  element.srcObject = stream
+  element.play()
+}
+
+reattachMediaStream = function (to, from) {
+  console.log('Reattaching media stream')
+  to.srcObject = from.srcObject
+  to.play()
+}
+
+var cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]},
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] }
 
 /* THIS IS ALICE, THE CALLER/SENDER */
@@ -38,18 +51,14 @@ $('#createBtn').click(function () {
 })
 
 $('#joinBtn').click(function () {
-  navigator.getUserMedia = navigator.getUserMedia ||
-                           navigator.webkitGetUserMedia ||
-                           navigator.mozGetUserMedia ||
-                           navigator.msGetUserMedia
-  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
     var video = document.getElementById('localVideo')
-    video.src = window.URL.createObjectURL(stream)
+    video.srcObject = stream;
     video.play()
     pc2.addStream(stream)
-  }, function (error) {
+}).catch(function (error) {
     console.log('Error adding stream to pc2: ' + error)
-  })
+});
   $('#getRemoteOffer').modal('show')
 })
 
@@ -154,13 +163,9 @@ function setupDC1 () {
 
 function createLocalOffer () {
   console.log('video1')
-  navigator.getUserMedia = navigator.getUserMedia ||
-                           navigator.webkitGetUserMedia ||
-                           navigator.mediaDevices.getUserMedia ||
-                           navigator.msGetUserMedia
-  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
     var video = document.getElementById('localVideo')
-    video.src = window.URL.createObjectURL(stream)
+    video.srcObject = stream;
     video.play()
     pc1.addStream(stream)
     console.log(stream)
@@ -172,9 +177,9 @@ function createLocalOffer () {
     },
     function () { console.warn("Couldn't create offer") },
     sdpConstraints)
-  }, function (error) {
-    console.log('Error adding stream to pc1: ' + error)
-  })
+}).catch(function (error) {
+  console.log('Error adding stream to pc1: ' + error)
+});
 }
 
 pc1.onicecandidate = function (e) {
@@ -185,13 +190,13 @@ pc1.onicecandidate = function (e) {
 }
 
 function handleOnaddstream (e) {
-  console.log('Got remote stream', e.stream)
+  console.log('Got remote stream', e.streams[0])
   var el = document.getElementById('remoteVideo')
   el.autoplay = true
-  attachMediaStream(el, e.stream)
+  attachMediaStream(el, e.streams[0])
 }
 
-pc1.onaddstream = handleOnaddstream
+pc1.ontrack = handleOnaddstream
 
 function handleOnconnection () {
   console.log('Datachannel connected')
@@ -294,7 +299,7 @@ function handleCandidateFromPC1 (iceCandidate) {
   pc2.addIceCandidate(iceCandidate)
 }
 
-pc2.onaddstream = handleOnaddstream
+pc2.ontrack = handleOnaddstream
 pc2.onconnection = handleOnconnection
 
 function getTimestamp () {
