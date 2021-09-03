@@ -42,6 +42,11 @@ Serving HTTP on 0.0.0.0 port 8001 ...
 
 and then browse to [http://localhost:8001/](http://localhost:8001/).
 
+### For Android:
+
+[Vojtěch Sázel](https://www.linkedin.com/in/vojtechsazel) has ported this project
+to Android: [serverless-webrtc-android](https://github.com/wojta/serverless-webrtc-android).
+
 #### Blog posts with more details:
 
 http://blog.printf.net/articles/2013/05/17/webrtc-without-a-signaling-server

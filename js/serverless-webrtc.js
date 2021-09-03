@@ -5,7 +5,20 @@
     https://webrtc-demos.appspot.com/html/pc1.html
 */
 
-var cfg = {'iceServers': [{'url': 'stun:23.21.150.121'}]},
+// Attach a media stream to an element.
+attachMediaStream = function (element, stream) {
+  console.log('Attaching media stream')
+  element.srcObject = stream
+  element.play()
+}
+
+reattachMediaStream = function (to, from) {
+  console.log('Reattaching media stream')
+  to.srcObject = from.srcObject
+  to.play()
+}
+
+var cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]},
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] }
 
 /* THIS IS ALICE, THE CALLER/SENDER */
@@ -33,27 +46,26 @@ $('#waitForConnection').modal('hide')
 $('#createOrJoin').modal('show')
 
 $('#createBtn').click(function () {
+  $('#createOrJoin').modal('hide')
   $('#showLocalOffer').modal('show')
   createLocalOffer()
 })
 
 $('#joinBtn').click(function () {
-  navigator.getUserMedia = navigator.getUserMedia ||
-                           navigator.webkitGetUserMedia ||
-                           navigator.mozGetUserMedia ||
-                           navigator.msGetUserMedia
-  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
     var video = document.getElementById('localVideo')
-    video.src = window.URL.createObjectURL(stream)
+    video.srcObject = stream;
     video.play()
     pc2.addStream(stream)
-  }, function (error) {
+}).catch(function (error) {
     console.log('Error adding stream to pc2: ' + error)
-  })
+});
+  $('#createOrJoin').modal('hide')
   $('#getRemoteOffer').modal('show')
 })
 
 $('#offerSentBtn').click(function () {
+  $('#showLocalOffer').modal('hide')
   $('#getRemoteAnswer').modal('show')
 })
 
@@ -63,10 +75,12 @@ $('#offerRecdBtn').click(function () {
   console.log('Received remote offer', offerDesc)
   writeToChatLog('Received remote offer', 'text-success')
   handleOfferFromPC1(offerDesc)
+  $('#getRemoteOffer').modal('hide')
   $('#showLocalAnswer').modal('show')
 })
 
 $('#answerSentBtn').click(function () {
+  $('#showLocalAnswer').modal('hide')
   $('#waitForConnection').modal('show')
 })
 
@@ -74,6 +88,7 @@ $('#answerRecdBtn').click(function () {
   var answer = $('#remoteAnswer').val()
   var answerDesc = new RTCSessionDescription(JSON.parse(answer))
   handleAnswerFromPC2(answerDesc)
+  $('#getRemoteAnswer').modal('hide')
   $('#waitForConnection').modal('show')
 })
 
@@ -154,13 +169,9 @@ function setupDC1 () {
 
 function createLocalOffer () {
   console.log('video1')
-  navigator.getUserMedia = navigator.getUserMedia ||
-                           navigator.webkitGetUserMedia ||
-                           navigator.mozGetUserMedia ||
-                           navigator.msGetUserMedia
-  navigator.getUserMedia({video: true, audio: true}, function (stream) {
+  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(function (stream) {
     var video = document.getElementById('localVideo')
-    video.src = window.URL.createObjectURL(stream)
+    video.srcObject = stream;
     video.play()
     pc1.addStream(stream)
     console.log(stream)
@@ -172,9 +183,9 @@ function createLocalOffer () {
     },
     function () { console.warn("Couldn't create offer") },
     sdpConstraints)
-  }, function (error) {
-    console.log('Error adding stream to pc1: ' + error)
-  })
+}).catch(function (error) {
+  console.log('Error adding stream to pc1: ' + error)
+});
 }
 
 pc1.onicecandidate = function (e) {
@@ -185,13 +196,13 @@ pc1.onicecandidate = function (e) {
 }
 
 function handleOnaddstream (e) {
-  console.log('Got remote stream', e.stream)
+  console.log('Got remote stream', e.streams[0])
   var el = document.getElementById('remoteVideo')
   el.autoplay = true
-  attachMediaStream(el, e.stream)
+  attachMediaStream(el, e.streams[0])
 }
 
-pc1.onaddstream = handleOnaddstream
+pc1.ontrack = handleOnaddstream
 
 function handleOnconnection () {
   console.log('Datachannel connected')
@@ -294,7 +305,7 @@ function handleCandidateFromPC1 (iceCandidate) {
   pc2.addIceCandidate(iceCandidate)
 }
 
-pc2.onaddstream = handleOnaddstream
+pc2.ontrack = handleOnaddstream
 pc2.onconnection = handleOnconnection
 
 function getTimestamp () {
@@ -310,6 +321,16 @@ function getTimestamp () {
   return result
 }
 
+function escapeHTML (unsafe_str) {
+  return unsafe_str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/\'/g, '&#39;')
+    .replace(/\//g, '&#x2F;')
+}
+
 function writeToChatLog (message, message_type) {
-  document.getElementById('chatlog').innerHTML += '<p class="' + message_type + '">' + '[' + getTimestamp() + '] ' + message + '</p>'
+  document.getElementById('chatlog').innerHTML += '<p class="' + message_type + '">' + '[' + getTimestamp() + '] ' + escapeHTML(message) + '</p>'
 }
