@@ -104,7 +104,7 @@ function doCreateAnswer() {
 
 function doSetLocalDesc(desc) {
   answer = desc;
-  pc.setLocalDescription(desc, undefined, doHandleError);
+  pc.setLocalDescription(desc, function(){}, doHandleError);
 };
 
 function doHandleDataChannels() {
@@ -143,9 +143,11 @@ function makeOffer() {
   pc.oniceconnectionstatechange = oniceconnectionstatechange;
   pc.onicegatheringstatechange = onicegatheringstatechange;
   pc.createOffer(function (desc) {
-    pc.setLocalDescription(desc, function () {});
+    pc.setLocalDescription(desc, function () {}, function (err) {});
     // We'll pick up the offer text once trickle ICE is complete,
     // in onicecandidate.
+  },function (err) {
+    console.log("Error ", err);
   });
   pc.onicecandidate = function(candidate) {
     // Firing this callback with a null candidate indicates that
